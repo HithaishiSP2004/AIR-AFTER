@@ -25,6 +25,7 @@ def test_frontend_and_security_headers():
 
 
 def test_api_inputs_validated():
+    assert client.get("/api/air", params={**LOC.model_dump(), "name": "   "}).status_code == 422
     assert client.get('/api/air?latitude=500&longitude=500&name=test').status_code==422
     assert client.post('/api/impact',json={'distance_km':-3,'occupants':2,'trips_per_week':2}).status_code==422
     assert client.post('/api/room',json={'area_m2':-3,'ceiling_m':2.8}).status_code==422

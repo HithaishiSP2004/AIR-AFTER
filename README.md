@@ -1,120 +1,65 @@
-# AIR / AFTER
+﻿# AIR / AFTER
+## The Living Air Atlas
 
-### See what your choices change.
+**See what your choices change.** An India-first air-quality decision assistant for households choosing how to travel, when to play outside and how to manage indoor particle sources. Built for PromptWars Virtual, Challenge 06.
 
-**An India-first, context-aware air-quality decision assistant** for Hack2skill / PromptWars Virtual — Challenge 06: Urban Air Quality Assistant.
+## Run locally
 
-AIR / AFTER is not another AQI counter. It combines actual provider data, explicit observation-vs-model provenance, household-specific routine suggestions, transparent decision comparisons, indoor air-quality guidance and an optional Gemini explanation layer. The visual language is deliberately distinctive: **atmospheric editorial**, not a copied AI dashboard.
+Use Python 3.11 or newer. In PowerShell, from the repository root:
 
-> **Status:** A functional code foundation with running FastAPI routes, a designed responsive frontend, source-aware air provider adapters, typed schemas, calculators, tests and optional Gemini integration. **Real external API calls and Gemini live calls require verification in your network/deployment environment; they could not be exercised from the offline build environment.** Automated provider-fixture and browser rendering checks are not live-provider verification.
-
-## Start in under two minutes
-
-Requires Python **3.11+**, Git and an internet connection for dependency installation and environmental-data requests.
-
-```bash
+```powershell
 python -m venv .venv
-# Windows PowerShell:
-.venv\Scripts\Activate.ps1
-# macOS / Linux:
-# source .venv/bin/activate
-pip install -r requirements-dev.txt
-cp .env.example .env   # Windows PowerShell: Copy-Item .env.example .env
-python -m pytest -q
-uvicorn app.main:app --reload
+.\.venv\Scripts\python -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python -m uvicorn app.main:app --reload
 ```
 
-Open **http://127.0.0.1:8000**.
+On macOS or Linux the virtual environment interpreter is `.venv/bin/python`. Open **http://127.0.0.1:8000**. The frontend is served by FastAPI and needs no build.
 
-No key is required for the modeled Open-Meteo data provider (subject to its access terms and network availability). Add secrets to `.env` only:
+For station data or AI selection, put `OPENAQ_API_KEY` and/or `GEMINI_API_KEY` in server environment variables or a local `.env`. See [.env.example](.env.example) for optional model configuration. The modeled air and city search providers work without an API key when reachable. The app presents missing data explicitly and still provides household guidance and calculators when providers are offline.
 
-```env
-OPENAQ_API_KEY=your_open_aq_v3_key
-GEMINI_API_KEY=your_gemini_key
-GEMINI_MODEL=gemini-2.5-flash
-```
+## Four ways to use the atlas
 
-Never commit `.env`. OpenAQ adds nearby station observations. Gemini adds AI explanations; without it, the assistant clearly identifies itself as **rule-based guidance**. All features still display appropriate source/data-availability states when providers are offline.
+| Experience | Decision | Evidence and assumptions |
+| --- | --- | --- |
+| Air Intelligence | Choose a city, adjust the household profile and explore the next 24 hours. | A recent OpenAQ PM2.5 observation takes priority over an Open-Meteo/CAMS model estimate. Labels include type, unit and local time. Forecast gaps remain visible. |
+| Decision Studio | Compare solo/shared trips, combine errands or plan playtime. | Occupancy divides the vehicle total among passengers. Group savings require confirmation that separate trips of the same length would be replaced without a detour. Errand distances come from the user. |
+| Home Air Lab | Inspect cooking, filtration and ventilation in the Breathing Room and size a particle air cleaner. | Room volume times the selected clean-air changes/hour gives a CADR target in cubic metres per hour. Indoor air quality is unmeasured. |
+| Ask AIR | Ask a household question or continue from a decision. | Gemini can select relevant approved guidance and forecast evidence. Application code supplies the final wording, figures and sources. Responses identify their mode. |
 
-## The product's four experiences
+Concentration bands in daily guidance are editorial planning cues. Official India AQI, personal dose and numerical medical risk cannot be inferred from these readings. Transport estimates use the documented US EPA illustrative gasoline-car tailpipe factor. Vehicle type, routes and occupancy matter for interpretation. [Sources and assumptions](docs/SOURCES.md)
 
-| Experience | What works today | Distinctive evidence principle |
-|---|---|---|
-| **01 · Air Intelligence** | India location presets/search, current modeled PM2.5, optional station observations, 24-hour model chart, household-aware advice, source details | Never confuses model with station or claims an instant PM measurement is India's official AQI |
-| **02 · Decision Studio** | Interactive solo/shared vehicle allocation, errand distance scenario, contextual playtime guidance | Separates emissions from exposure, explains assumptions rather than claiming unverifiable personal health outcomes |
-| **03 · Home Air Lab** | Room size, ceiling and clean-air-change controls; CADR target; indoor source-control guidance | No invented indoor AQI; transparent calculation vs measurement distinction |
-| **04 · Ask AIR** | Structured Gemini REST interface with validated output + deterministic fallback, contextual household input, starter questions | Evidence comes from providers; AI explains but doesn't manufacture environmental data |
+## Architecture and privacy
 
-**Core audience:** households, parents, commuters, and communities navigating urban pollution and winter smog in India.
+One FastAPI service serves the native HTML/CSS/ES module interface. Typed provider adapters normalize observations and forecasts. A bounded memory cache reduces repeated lookups. Domain functions calculate all numerical comparisons and select household-specific options. Canvas 2D renders a seeded, illustrative urban landscape from cached geometry. [Architecture](docs/ARCHITECTURE.md) · [Design and graphics](docs/DESIGN_DNA.md)
 
-## Why this stack?
-
-- **Python / FastAPI / Pydantic**: clear, typed, testable decision and provider logic; narrow HTTP surface.
-- **Native HTML/CSS/JavaScript**: no npm bundle, no generic UI library, no build step, tiny repository and excellent runtime efficiency.
-- **Custom Canvas 2D**: bespoke living-atmosphere illustration with capped density, reduced motion and visibility suspension.
-- **OpenAQ v3, Open-Meteo/CAMS**: separate station measurements from atmospheric model estimates.
-- **Gemini REST (optional)**: structured JSON explanation fed grounded environmental data, with server-side credential handling.
-
-More architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Detailed sources and citations: [`docs/SOURCES.md`](docs/SOURCES.md).
-
-## Project map
-
-```text
-app/
-  main.py                 # Same-origin frontend + API routes, validation, headers
-  air_service.py          # Provider orchestration, preference for fresh observations, TTL cache
-  assistant.py            # Gemini REST + explicit rules fallback
-  config.py               # Server-side keys only
-  providers/              # OpenAQ, Open-Meteo, geocoding, safe HTTP boundary
-  domain/                 # Typed contracts, explainable rules, impact calculators
-web/
-  index.html              # All four real interactive views, modals, accessible labels
-  assets/styles.css       # Original atmospheric editorial design system
-  assets/app.js           # Native UI state, forecast renderer, Canvas, API interactions
-  assets/mark.svg         # Custom icon
-tests/                    # Domain, normalization, failure and endpoint tests
-docs/                     # Scientific citations, design DNA, QA, and architecture
-```
-
-## Trust and assumptions
-
-- Air-quality measurements may be sparse or stale, and a model is not a nearby monitor. We show timestamps and disclosures.
-- The app **does not compute India AQI** from hourly or instantaneous PM2.5. PM2.5 concentration in µg/m³ is its own measurement, not an AQI score.
-- The emissions comparison uses **US EPA illustrative gasoline tailpipe CO₂/vehicle-km**, not an India-calibrated fleet factor, and only allocates the *same vehicle's* emissions across occupants. It does not claim that sharing a seat reduces that vehicle's emissions; avoided trip cases require a separate counterfactual.
-- The CADR estimate is volume × selected equivalent clean-air-change target; it cannot measure indoor pollution.
-- Guidance is for education and planning, not medical diagnosis or an exact exposure-risk prediction.
-- Data-provider access is subject to attribution, terms, availability and rate limits.
-
-Methodology and source URLs: [`docs/SOURCES.md`](docs/SOURCES.md).
+The browser saves city and broad preferences locally. Requests send the relevant context to the backend. When Gemini is configured, it receives the current question, household options and selected environmental evidence. The application has no user accounts or conversation database. Keys are server-only. Assistant selections reference validated items. Authentication and quota failures end model attempts, while eligible transient failures, an unavailable model or malformed selections can trigger one alternate within the response budget.
 
 ## API
 
-- `GET /api/health`
-- `GET /api/cities?q=Pune`
-- `GET /api/air?name=Pune&region=Maharashtra&latitude=18.5204&longitude=73.8567`
-- `POST /api/guidance` — `{ "location": {...}, "household": {...} }`
-- `POST /api/impact` — `{ "distance_km": 12, "trips_per_week": 10, "occupants": 3 }`
-- `POST /api/room` — `{ "area_m2": 20, "ceiling_m": 2.8, "clean_air_changes_hour": 4 }`
-- `POST /api/ask` — `{ "question": "Should my child play outside?", "location": {...}, "household": {...} }`
+| Method and path | Purpose |
+| --- | --- |
+| GET /api/health | Service status |
+| GET /api/cities?q=Pune | Indian city search |
+| GET /api/air | Air context for name, region, latitude and longitude |
+| POST /api/guidance | Daily guidance for location and household |
+| POST /api/impact | Weekly allocation and optional avoided-trip calculation |
+| POST /api/room | Room volume and target CADR |
+| POST /api/ask | Contextual answer with mode, evidence, alternative and assumptions |
 
-Schema definitions: [`app/domain/models.py`](app/domain/models.py).
+[Request and response models](app/domain/models.py)
 
-## Test and deploy
+## Verification and evaluation
 
-```bash
+```sh
 python -m compileall -q app
-python -m pytest -q
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+python -m pytest
+node --test tests/atmosphere.test.mjs
 ```
 
-Deploy to any Python ASGI host; [`render.yaml`](render.yaml) is provided for Render. Set optional environment variables in your host's secret-manager UI, not inside the code. A functioning, public deployed URL must be checked independently before submission.
+Node is only used for development tests. Keyboard-accessible dialogs, native forecast and sizing controls, text equivalents, selected-state labels and reduced-motion behavior support use without the illustrations. Try a Delhi parent planning cricket, a Bengaluru commuter sharing a ride and a Mumbai household sizing filtration. [Evaluator walkthrough](docs/QA_AND_DEMO.md)
 
-End-to-end evaluator checklist and three example users: [`docs/QA_AND_DEMO.md`](docs/QA_AND_DEMO.md).
+## Deployment
 
-## Challenge submission constraints
+Install `requirements.txt` and serve `app.main:app` with Uvicorn on the host-provided port. Configure optional API keys in the host secret manager. [Render configuration](render.yaml)
 
-Keep **one public repository**, **one branch** (`main`), **tracked repository under 10 MB**, and no keys, build artifacts, `.venv`, or dependency folders. Include a deployed URL, project code, README, LinkedIn process explanation and working demo recording as instructed in the challenge briefing. **The final attempt score counts; don't resubmit casually.**
-
-## Disclosure
-
-The generated screenshots used while developing this foundation were tested with labeled synthetic browser fixtures because outbound provider access was unavailable in the build environment. **Those fixtures are not shipped as live product values.**
+Check the deployed URL, provider availability, attribution, model quota and host timeouts before recording the demo. The prototype uses per-process caching and throttling. Public evaluation requires a working deployment, one public branch (`main`), tracked source under 10 MB, the demonstration and the development explanation.

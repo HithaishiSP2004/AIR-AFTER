@@ -1,7 +1,10 @@
 """Small same-origin FastAPI application. Data routes serve no fabricated values."""
+from collections import OrderedDict
 from pathlib import Path
+import asyncio
+from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, Query, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from app.domain.models import (
     Location, Household, AskInput, JourneyInput, RoomInput,
@@ -21,7 +24,7 @@ app.mount("/assets", StaticFiles(directory=ROOT / "web" / "assets"), name="asset
 
 # Per-process throttling: light abuse mitigation; deployment-wide rate limiting
 # must be added upstream for high-volume production traffic.
-_ASK_TIMES: dict[str, list[float]] = {}
+_ASK_TIMES: OrderedDict[str, list[float]] = OrderedDict()
 
 @app.middleware("http")
 async def security_headers(request: Request, call_next):
@@ -55,6 +58,8 @@ async def air(name: str = Query(min_length=2, max_length=90),
               region: str = Query(default="", max_length=90),
               latitude: float = Query(ge=6, le=38),
               longitude: float = Query(ge=67, le=98)):
+    if len(name.strip()) < 2:
+        raise HTTPException(status_code=422, detail="Enter a location name with at least two characters")
     location = Location(name=name, region=region, latitude=latitude, longitude=longitude)
     return await get_air(location)
 
@@ -62,14 +67,22 @@ async def air(name: str = Query(min_length=2, max_length=90),
 async def ask(input: AskInput, request: Request):
     peer = request.client.host if request.client else "anonymous"
     now = time.monotonic()
+    while _ASK_TIMES and now - next(iter(_ASK_TIMES.values()))[-1] >= 60:
+        _ASK_TIMES.popitem(last=False)
+    if peer not in _ASK_TIMES and len(_ASK_TIMES) >= 1024:
+        raise HTTPException(status_code=429, detail="Assistant is busy. Please try again shortly.")
     history = [t for t in _ASK_TIMES.get(peer, []) if now - t < 60]
     if len(history) >= 8:
         raise HTTPException(status_code=429, detail="Please pause before asking another question")
     history.append(now)
-    if len(_ASK_TIMES) > 1024: _ASK_TIMES.clear()
     _ASK_TIMES[peer] = history
-    snap = await get_air(input.location)
-    return await reply(input.question, snap, input.household)
+    _ASK_TIMES.move_to_end(peer)
+    try:
+        snap = await asyncio.wait_for(get_air(input.location), timeout=8)
+    except asyncio.TimeoutError:
+        snap = AirSnapshot(location=input.location, primary=None, fetched_at=datetime.now(timezone.utc),
+                           warnings=["The environmental lookup timed out."])
+    return await reply(input.question, snap, input.household, input.scenario)
 
 @app.post("/api/impact", response_model=JourneyComparison)
 async def impact(input: JourneyInput):

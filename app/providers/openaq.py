@@ -17,7 +17,7 @@ def parse_stations(data: object) -> list[dict]:
     for item in data["results"]:
         if not isinstance(item, dict) or not isinstance(item.get("id"), int): continue
         country = item.get("country") or {}
-        if isinstance(country, dict) and country.get("code") != "IN": continue
+        if not isinstance(country, dict) or country.get("code") != "IN": continue
         sensors = item.get("sensors") or []
         if not isinstance(sensors, list): continue
         sensor_map = {}
@@ -41,13 +41,17 @@ def parse_latest(data: object, station: dict, now: datetime) -> list[Evidence]:
     readings: list[Evidence] = []
     for entry in data["results"]:
         if not isinstance(entry, dict): continue
-        pollutant = station["sensors"].get(entry.get("sensorsId"))
+        sensor_id = entry.get("sensorsId")
+        if type(sensor_id) is not int: continue
+        pollutant = station["sensors"].get(sensor_id)
         value, timestamp = entry.get("value"), entry.get("datetime")
         if pollutant is None or not isinstance(value, (int, float)) or isinstance(value, bool) or not 0 <= value <= 3000:
             continue
         if not isinstance(timestamp, dict) or not isinstance(timestamp.get("utc"), str): continue
         try:
-            dt = datetime.fromisoformat(timestamp["utc"].replace("Z", "+00:00")).astimezone(timezone.utc)
+            dt = datetime.fromisoformat(timestamp["utc"].replace("Z", "+00:00"))
+            if dt.tzinfo is None: continue
+            dt = dt.astimezone(timezone.utc)
         except ValueError: continue
         hours = (now - dt).total_seconds() / 3600
         if hours < -1: continue
@@ -71,11 +75,15 @@ async def get_observations(location: Location, now: datetime) -> list[Evidence]:
     responses = await asyncio.gather(*[
         fetch_json(f"{BASE}/locations/{station['id']}/latest", headers=headers)
         for station in nearest], return_exceptions=True)
+    available = 0
     for station, response in zip(nearest, responses):
         if isinstance(response, Exception):
             continue
         try:
             readings += parse_latest(response, station, now)
+            available += 1
         except ProviderError:
             continue
+    if nearest and not available:
+        raise ProviderError("Station observations unavailable")
     return sorted(readings, key=lambda e: (e.stale, e.distance_km if e.distance_km is not None else 999, -e.measured_at.timestamp()))

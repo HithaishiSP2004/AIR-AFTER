@@ -24,16 +24,16 @@ FastAPI routes — typed Pydantic contracts
 - `primary` = fresh station PM2.5 if found, else recent modeled PM2.5, else null. No Indian AQI estimate is shown.
 - `warnings` = missing keys, stale stations, unavailable provider, or missing recent PM2.5 evidence.
 
-Code boundary: `app/providers/*` is never a user-interface module. `app/domain/*` has no HTTP dependency. AI cannot set numeric environmental facts in our evidence payload. The assistant is asked to interpret an already validated evidence object; final `evidence` and `source` labels come from application code, not the model.
+Code boundary: `app/providers/*` is never a user-interface module. `app/domain/*` has no HTTP dependency. AI cannot set numeric environmental facts in our evidence payload. Gemini receives a bounded catalog of approved decisions plus household and forecast context. It selects a decision, action indices and an optional forecast index. Application code validates the selection, assembles the answer and supplies evidence and source labels. Authentication or quota errors stop attempts. A missing model, invalid selection or transient service failure can use one alternate model.
 
 ## Privacy / operations
 
-- Browser localStorage only for selected location and broad household preferences. No authentication or personal records.
+- Selected location and broad household preferences persist in browser localStorage. Requests include them for guidance, and enabled Gemini requests include household context. No authentication or personal records.
 - API keys remain in the server process. Never use `NEXT_PUBLIC_` or put keys in JavaScript.
 - CSP prohibits off-origin browser requests and inline scripts. Only the backend contacts providers.
 - One-process cache of max 64 entries reduces calls; server restarts invalidate cache. Production at scale should use provider-aware distributed caching and gateway rate limits.
 - `/api/ask` has an in-memory per-process rate guard; this is intentionally not presented as a production distributed security boundary.
-- External fetches have seven-second timeout, disabled redirects and bounded JSON response sizes. Gemini POST has 14-second timeout.
+- External fetches have seven-second timeout, disabled redirects and bounded JSON response sizes. Ask AIR allows up to eight seconds for environmental context and 17 seconds total for the model sequence. The browser uses a 30-second assistant timeout.
 
 ## Deliberate omissions
 

@@ -51,6 +51,7 @@ class AskInput(StrictModel):
     question: str = Field(min_length=3, max_length=450)
     location: Location
     household: Household = Field(default_factory=Household)
+    scenario: Literal["commute", "errands", "play", "home"] | None = None
 
 class AssistantReply(StrictModel):
     mode: Literal["gemini", "rules"]
@@ -60,17 +61,23 @@ class AssistantReply(StrictModel):
     evidence: str = Field(max_length=400)
     caveat: str = Field(max_length=600)
     source: str = Field(max_length=180)
+    alternative: str = Field(default="", max_length=400)
+    assumption: str = Field(default="", max_length=400)
 
 class JourneyInput(StrictModel):
     distance_km: float = Field(ge=0.5, le=150)
     trips_per_week: int = Field(ge=1, le=14)
     occupants: int = Field(ge=1, le=7)
+    replaces_solo_trips: bool = False
 
 class JourneyComparison(StrictModel):
     distance_km: float
     solo_kg_co2_week: float
     shared_kg_co2_person_week: float
     saved_kg_co2_person_week: float
+    allocation_difference_kg_person_week: float
+    avoided_vehicle_km_week: float | None = None
+    avoided_tailpipe_kg_week: float | None = None
     occupants: int
     factor_kg_co2_vehicle_km: float
     factor_source: str
@@ -86,11 +93,8 @@ class RoomResult(StrictModel):
     target_cadr_m3h: float
     note: str
 
-class CityResult(StrictModel):
-    name: str
-    region: str
-    latitude: float
-    longitude: float
+class CityResult(Location):
+    """A geocoder result must also be valid input to the air and guidance routes."""
 
 class CitySearchResult(StrictModel):
     results: list[CityResult]

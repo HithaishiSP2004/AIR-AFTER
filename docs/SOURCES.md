@@ -17,4 +17,6 @@ Checked against public provider documentation on 2026-11-23. Sources are referen
 
 ### Known methodological limits
 
+The Decision Fork's optional trip-replacement estimate assumes every occupant would drive the same journey separately in a comparable gasoline car. Weekly vehicle-km avoided equal distance × weekly trips × (occupants − 1), with identical pickup and destination points and no detours. Multiplying by the illustrative EPA factor above gives estimated group tailpipe CO₂ avoided. Without this assumption the API returns null for both avoided totals.
+
 Weather, activity intensity, street-level variation and ventilation are not directly captured by a city model value. A household's indoor AQI cannot be inferred from outside PM2.5. Carpool allocation is not necessarily emissions avoided. Route distances in the errand scenario are user input, not geocoded road routes. AI cannot substitute for physician advice or local public alerts.

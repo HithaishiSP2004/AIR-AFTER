@@ -1,0 +1,263 @@
+/* Decision tools share a ruled input column and a full-width instrument face. */
+.fork-tabs,
+.breathing-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.fork-tabs {
+  border-block: 1px solid var(--line);
+  margin-bottom: 1.25rem;
+}
+
+.fork-tabs button,
+.breathing-select button,
+.fork-action {
+  min-height: 44px;
+  padding: 0.6rem 0.9rem;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: normal;
+}
+
+.fork-tabs button[aria-selected="true"] {
+  box-shadow: inset 0 -3px #a95e39;
+}
+
+.fork-layout,
+.breathing-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.84fr) minmax(0, 1.16fr);
+  gap: clamp(1.25rem, 3vw, 3rem);
+  margin-bottom: 3rem;
+}
+
+.fork-layout[hidden] {
+  display: none;
+}
+
+.fork-controls {
+  min-width: 0;
+  padding: clamp(0.6rem, 2vw, 2rem) 0;
+}
+
+.fork-controls h2,
+.fork-result h3 {
+  margin: 0;
+  font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+  font-weight: 550;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+}
+
+.fork-controls p,
+.fork-result p,
+.breathing-stage p {
+  font-size: 1rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.fork-controls label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin: 1.3rem 0 0;
+  font-weight: 550;
+}
+
+.fork-controls output {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.fork-controls input[type="range"] {
+  display: block;
+  width: 100%;
+  height: 36px;
+  accent-color: #92502f;
+}
+
+.fork-controls .fork-check {
+  align-items: start;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.fork-check input {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.2rem;
+  accent-color: #92502f;
+}
+
+.fork-controls select {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #808987;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.fork-result,
+.breathing-stage {
+  min-width: 0;
+  background: #273438;
+  color: #f4f4ed;
+  padding: clamp(1.2rem, 2.6vw, 2.4rem);
+}
+
+.fork-result > p,
+.breathing-stage > p {
+  color: #d0d9d7;
+}
+
+.fork-journey {
+  width: 100%;
+  max-height: 72px;
+  display: block;
+  color: #8da5a3;
+  fill: #efc59e;
+  margin-top: 1.3rem;
+}
+
+.fork-branches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1.7rem 0 1.3rem;
+  border-block: 1px solid #607274;
+}
+
+.fork-branches > div {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  padding: 1.1rem 0.85rem 1.1rem 0;
+}
+
+.fork-branches > div + div {
+  border-left: 1px solid #607274;
+  padding-left: 1rem;
+  color: #efc59e;
+}
+
+.fork-branches strong,
+.breathing-target strong {
+  font: 500 clamp(2.8rem, 4vw, 4.3rem)/1.12 var(--font, system-ui);
+  letter-spacing: -0.07em;
+  font-variant-numeric: tabular-nums;
+}
+
+.fork-branches meter {
+  width: 100%;
+  height: 0.6rem;
+  accent-color: #e6c39e;
+}
+
+.fork-branches meter::-webkit-meter-bar {
+  background: #506266;
+  border: 0;
+}
+
+.fork-branches meter::-webkit-meter-optimum-value { background: #e2c09d; }
+.fork-branches meter::-moz-meter-bar { background: #e2c09d; }
+
+.fork-result h4 { margin: 1.5rem 0 0; }
+.fork-result h4 + p { margin-top: 0.4rem; }
+
+.fork-result details,
+.breathing-size details {
+  border-top: 1px solid #82918c;
+  margin-top: 1.4rem;
+}
+
+.fork-result summary,
+.breathing-size summary {
+  padding-block: 0.85rem;
+  cursor: pointer;
+}
+
+.fork-result a,
+.breathing-size a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+.fork-action {
+  border: 1px solid #96a5a3;
+  margin-top: 0.6rem;
+}
+
+.breathing-layout { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); }
+
+.breathing-stage {
+  background: #263332;
+  align-self: start;
+}
+
+.breathing-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid #647371;
+  padding-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.breathing-caption span { font-weight: 400; color: #c3cfca; }
+.breathing-art { width: 100%; display: block; margin-block: 1.7rem; }
+.room-line path { opacity: 0; transition: opacity 180ms ease; }
+
+.breathing-stage[data-feature="source"] [data-mark="source"],
+.breathing-stage[data-feature="window"] [data-mark="window"],
+.breathing-stage[data-feature="filter"] [data-mark="filter"] {
+  opacity: 1;
+}
+
+.breathing-select button {
+  border: 1px solid #758482;
+  font-size: 0.94rem;
+}
+
+.breathing-select button[aria-pressed="true"] {
+  color: #232e30;
+  background: #efc59e;
+  border-color: #efc59e;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+.breathing-target {
+  margin-top: 1.4rem;
+  padding: 1.1rem 1.35rem;
+  background: #dde5df;
+  border-left: 3px solid #527065;
+  color: #263331;
+}
+
+.breathing-target > div { margin-top: 0.35rem; }
+.breathing-target p { margin: 0.5rem 0 0; }
+
+@media (max-width: 730px) {
+  .fork-layout, .breathing-layout { grid-template-columns: 1fr; }
+  .breathing-art { max-height: 320px; }
+}
+
+@media (max-width: 420px) {
+  .breathing-select button, .fork-tabs button { padding-inline: 0.55rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-line path { transition: none; }
+}

@@ -10,7 +10,19 @@ ATTRIBUTION = "Open-Meteo / Copernicus Atmosphere Monitoring Service (CAMS)"
 
 def as_utc(text: str) -> datetime:
     # API requested with timezone=GMT. ISO timestamps without Z are UTC.
-    return datetime.fromisoformat(text.replace("Z", "+00:00")).replace(tzinfo=timezone.utc)
+    parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def concentration_unit(units: object, pollutant: str) -> bool:
+    # The endpoint's documented default unit applies when metadata is omitted.
+    if units is None:
+        return True
+    if not isinstance(units, dict):
+        return False
+    return units.get(pollutant) in ("µg/m³", "μg/m³", "ug/m3")
 
 
 def number(value: object) -> float | None:
@@ -27,7 +39,7 @@ def parse_openmeteo(data: object) -> tuple[Evidence | None, list[ForecastPoint]]
     if isinstance(current, dict):
         pm = number(current.get("pm2_5"))
         stamp = current.get("time")
-        if pm is not None and isinstance(stamp, str):
+        if pm is not None and isinstance(stamp, str) and concentration_unit(data.get("current_units"), "pm2_5"):
             try:
                 dt = as_utc(stamp)
                 modeled = Evidence(kind="model", provider=ATTRIBUTION, pollutant="pm2_5",
@@ -35,18 +47,23 @@ def parse_openmeteo(data: object) -> tuple[Evidence | None, list[ForecastPoint]]
             except ValueError:
                 pass
     hourly = data.get("hourly")
-    forecast: list[ForecastPoint] = []
+    forecast: dict[datetime, ForecastPoint] = {}
     if isinstance(hourly, dict):
         times, fine, coarse = hourly.get("time"), hourly.get("pm2_5"), hourly.get("pm10")
-        if isinstance(times, list) and isinstance(fine, list) and isinstance(coarse, list):
-            for time, p25, p10 in zip(times[:72], fine[:72], coarse[:72]):
+        units = data.get("hourly_units")
+        fine = fine if isinstance(fine, list) and concentration_unit(units, "pm2_5") else []
+        coarse = coarse if isinstance(coarse, list) and concentration_unit(units, "pm10") else []
+        if isinstance(times, list):
+            for index, time in enumerate(times[:72]):
                 if not isinstance(time, str): continue
                 try:
                     dt = as_utc(time)
-                    forecast.append(ForecastPoint(time=dt, pm2_5=number(p25), pm10=number(p10)))
+                    forecast[dt] = ForecastPoint(
+                        time=dt, pm2_5=number(fine[index]) if index < len(fine) else None,
+                        pm10=number(coarse[index]) if index < len(coarse) else None)
                 except ValueError:
                     continue
-    return modeled, forecast
+    return modeled, [forecast[dt] for dt in sorted(forecast)]
 
 async def get_model(location: Location) -> tuple[Evidence | None, list[ForecastPoint]]:
     query = urlencode({

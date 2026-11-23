@@ -1,34 +1,29 @@
-# AIR / AFTER — Visual DNA, v1
+﻿# The Living Air Atlas
 
-Our expression is **atmospheric editorial**: a serious environmental field guide with the refinement of a contemporary publication. Every visual feature must express a user decision or the provenance of evidence.
+AIR / AFTER pairs a porcelain reading surface with a basalt instrument panel and an illustrated urban horizon. The selected city, pollutant and household decision share the opening view. Decision Studio, Home Air Lab and Ask AIR are sibling destinations with their own URLs.
 
-## Signature primitives
+## Shared tokens
 
-- **Porcelain field** (`#eeeae1`): the reading environment, not stark pure white.
-- **Atmospheric ink** (`#1c312c`): high-information hero surface and comparison interface.
-- **Muted copper** (`#bc7d55`): selections and meaningful editorial accents, not glowing warning red.
-- **Cooled mineral green** (`#769985`): restrained atmospheric data traces.
-- **Typographic pairing:** geometric system sans for wayfinding and annotations; italic Georgia for a humane, editorial contrast. No remote font dependency.
-- **Hairline rhythm:** precise 1px rules, small folio indexes, generous spacing, purposeful asymmetry.
-- **Microcopy:** inviting, practical, matter-of-fact. No fear-mongering, no exaggerated medical claims.
-- **Illustrations:** procedural, scientifically disclosed as metaphors. Never depict a computed room concentration or air-flow simulation as measurement.
+| Token | Value | Role |
+| --- | --- | --- |
+| Paper | `#f7f6f1` | Page background |
+| Surface | `#fffefa` | Masthead, dialogs, selected controls |
+| Ink | `#202f32` | Main text and active navigation |
+| Muted ink | `#506169` | Supporting text |
+| Rule | `#bac6c5` | Dividers and boundaries |
+| Copper | `#935034` | Annotations and interactive accents |
+| Mineral | `#668b91` | Atmospheric illustration |
 
-## Interaction grammar
+System sans carries controls, body copy and tabular measurements. Georgia marks the atmospheric opening and short editorial headings. The system requires no font download. Shared layout tokens, dialogs and navigation live in `web/assets/styles.css`. Each experience owns its specific visual rules.
 
-1. Location and context are always easy to change.
-2. One main action per visible module; avoid a grid of unrelated buttons.
-3. Each environmental reading has type, source, unit, timestamp and error state.
-4. The chart uses real returned model points; never interpolate missing data as if measured.
-5. Transformations are restrained (200–450ms), with no transition essential to understanding.
-6. Canvas engine is deterministic in configuration; particle field is metaphor. Pause on hidden pages and reduced motion.
-7. Custom icons are monoline/bespoke. Do not install a generic icon set to scatter decorative symbols.
-8. Content width, column rhythm and spacing must remain deliberate at 390px and 1440px.
-9. New screens should extend existing motifs, not introduce a new color scheme per feature.
+## Illustrations and evidence
 
-## Anti-pattern blacklist
+- The Living Atmosphere uses a seeded skyline, bridge and reflections baked into a second canvas on resize. Both buffers cap pixel ratio at 1.5. Animated frames composite the cached scene and a single particle path.
+- A finite PM2.5 value selects up to 88 illustrative particles using `min(88, 8 + round(0.45 * concentration))`. Missing evidence selects zero and suspends the loop. A zero reading retains a distinct numeric label. Density is an artistic mapping with no physical units.
+- Forecast selection changes the hero label, source time and illustration together. Gaps separate groups of available points. A native range control exposes the selected hour to keyboard and touch.
+- The Decision Fork compares explicit assumptions. Room feature selectors connect an architectural section with cooking, filtration and ventilation guidance. Indoor concentration and airflow are unmeasured.
+- The scene skips animation when hidden, offscreen or subject to reduced motion, and spaces moving frames by at least 48 ms. Neither motion nor color is needed to read a result.
 
-Cyber neon, purple-blue gradients, frosted-glass card fleets, generic dashboard KPI donuts, oversized fake 3D globes, stock pollution photography, default Tailwind/SaaS layouts, random color-changing animations, emoji as interface iconography, hollow animations that slow the app, imported hero images without clear purpose.
+## Navigation and accessibility
 
-## Engineering limits for graphics
-
-`web/assets/app.js` includes the initial lightweight atmospheric Canvas. If upgrading or modifying it, maintain its API `setDensity` and `drawOnce` or update all callers and tests. Keep Canvas 2D unless a documented, measurable requirement truly needs more. Respect `devicePixelRatio` caps, `requestAnimationFrame` throttling, `visibilitychange`, and `prefers-reduced-motion`. No WebGL dependency by default.
+Desktop uses a horizontal masthead. Below 921 CSS pixels a bottom navigation bar reserves space for the device safe area. Native dialogs handle Escape and focus return. Every view has a deep link. Active destinations, scenario tabs and room selections expose their state to assistive technology. Render assistant replies and provider text through text nodes.

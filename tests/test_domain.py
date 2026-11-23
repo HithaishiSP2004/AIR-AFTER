@@ -32,6 +32,15 @@ def test_single_occupant_has_no_share_difference():
     assert result.saved_kg_co2_person_week == 0
 
 
+@pytest.mark.parametrize("occupants,replaces,km", [(3, False, None), (3, True, 100), (1, True, 0)])
+def test_trip_replacement_requires_explicit_equal_distance_assumption(occupants, replaces, km):
+    result = compare_journey(JourneyInput(distance_km=10, trips_per_week=5,
+                                         occupants=occupants, replaces_solo_trips=replaces))
+    assert result.avoided_vehicle_km_week == km
+    assert result.avoided_tailpipe_kg_week == (None if km is None else round(km * EPA_TYPICAL_CAR_KG_KM, 2))
+    assert result.allocation_difference_kg_person_week == result.saved_kg_co2_person_week
+
+
 def test_room_cadr_is_volume_times_clean_air_changes():
     result=size_air_cleaner(RoomInput(area_m2=20,ceiling_m=2.8,clean_air_changes_hour=4))
     assert result.room_volume_m3 == 56

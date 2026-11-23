@@ -11,11 +11,17 @@ EPA_SOURCE = "https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical
 def compare_journey(params: JourneyInput) -> JourneyComparison:
     vehicle_total = params.distance_km * params.trips_per_week * EPA_TYPICAL_CAR_KG_KM
     per_person = vehicle_total / params.occupants
+    allocation_difference = round(vehicle_total - per_person, 2)
+    # Each occupant would otherwise drive the same distance, with no pickup detour.
+    avoided_km = (params.occupants - 1) * params.distance_km * params.trips_per_week
     return JourneyComparison(
         distance_km=params.distance_km,
         solo_kg_co2_week=round(vehicle_total, 2),
         shared_kg_co2_person_week=round(per_person, 2),
-        saved_kg_co2_person_week=round(vehicle_total - per_person, 2),
+        saved_kg_co2_person_week=allocation_difference,  # Legacy API field.
+        allocation_difference_kg_person_week=allocation_difference,
+        avoided_vehicle_km_week=round(avoided_km, 2) if params.replaces_solo_trips else None,
+        avoided_tailpipe_kg_week=round(avoided_km * EPA_TYPICAL_CAR_KG_KM, 2) if params.replaces_solo_trips else None,
         occupants=params.occupants,
         factor_kg_co2_vehicle_km=round(EPA_TYPICAL_CAR_KG_KM, 5),
         factor_source=EPA_SOURCE,
