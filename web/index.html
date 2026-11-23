@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#eeeae1">
+  <meta name="description" content="AIR / AFTER is a location-aware air quality decision assistant. Understand the evidence, consider your household, and see what your choices change.">
+  <title>AIR / AFTER — See what your choices change</title>
+  <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script type="module" src="/assets/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div><strong>AIR <i>/</i> AFTER</strong><small>AN INTELLIGENT FIELD GUIDE</small></div>
+      </div>
+      <div class="sidebar-issue"><span class="circle-bullet"></span> THE AIR EDITION <span>№ 006</span></div>
+      <nav class="side-nav" aria-label="Sections">
+        <button class="nav-link active" data-view="intelligence" aria-current="page"><span class="nav-number">01</span><span>Air Intelligence</span><span class="nav-pointer">↗</span></button>
+        <button class="nav-link" data-view="decisions"><span class="nav-number">02</span><span>Decision Studio</span><span class="nav-pointer">↗</span></button>
+        <button class="nav-link" data-view="home"><span class="nav-number">03</span><span>Home Air Lab</span><span class="nav-pointer">↗</span></button>
+        <button class="nav-link" data-view="assistant"><span class="nav-number">04</span><span>Ask AIR</span><span class="nav-pointer">↗</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="side-rule"></div>
+        <span class="side-caps">THE PRINCIPLE</span>
+        <p>A better day begins with a better-informed choice.</p>
+        <div class="side-social"><span>INDIA <span class="tiny-dot"></span> EST. 2026</span><span>V 0.1</span></div>
+      </div>
+    </aside>
+    <div class="main-column">
+      <header class="topbar">
+        <div class="mobile-brand" aria-label="AIR / AFTER">A<span>/</span>A</div>
+        <div class="top-note"><span class="asterisk">✳</span> A PERSONAL AIR QUALITY COMPANION</div>
+        <div class="top-actions">
+          <button id="location-trigger" class="top-button location-trigger" aria-haspopup="dialog" aria-controls="city-dialog"><span class="location-symbol">◎</span> <span id="city-label">New Delhi</span> <span class="chevron">⌄</span></button>
+          <button id="profile-trigger" class="top-button profile-trigger" aria-haspopup="dialog" aria-controls="profile-dialog"><span class="profile-shape" aria-hidden="true"></span><span>MY HOUSEHOLD</span></button>
+        </div>
+      </header>
+      <main id="main" tabindex="-1">
+        <section class="view is-visible" id="view-intelligence" aria-labelledby="intelligence-title">
+          <div class="section-heading"><div class="eyebrow"><span class="eyebrow-stroke"></span> THE DAILY ATMOSPHERE / 01</div><div class="date-now" id="today-label">—</div></div>
+          <div class="hero-panel">
+            <div class="hero-copy">
+              <div class="hero-kicker"><span class="live-pulse"></span><span id="hero-status">CHECKING THE ATMOSPHERE</span></div>
+              <h1 id="intelligence-title">The air is <em>part of</em><br>your everyday.</h1>
+              <p>It shouldn't take an expert to decide what to do with it. Here's the context behind your next move.</p>
+              <button class="hero-link" data-open-view="decisions">EXPLORE YOUR CHOICES <span aria-hidden="true">↗</span></button>
+            </div>
+            <div class="hero-visual">
+              <canvas id="air-canvas" aria-hidden="true"></canvas>
+              <div class="hero-measure" aria-live="polite"><div class="measure-overline" id="measurement-kind">WAITING FOR VERIFIED DATA</div><div class="measure-row"><strong id="pm-value">—</strong><span class="measure-unit">PM₂.₅<br>µg/m³</span></div><div class="measure-under" id="measure-caption">No value until a provider responds</div></div>
+              <div class="figure-index">FIG 001 — ATMOSPHERIC DENSITY METAPHOR</div>
+            </div>
+            <div class="hero-footer"><div><span class="hero-footer-line"></span> OUR APPROACH: EVIDENCE FIRST</div><div>OBSERVED ≠ MODELLED <span class="footer-cross">✳</span></div></div>
+          </div>
+          <div class="intel-grid">
+            <article class="daily-note" aria-labelledby="daily-note-title">
+              <div class="block-head"><span>01.1 / TODAY, TRANSLATED</span><span class="small-arrow">↗</span></div>
+              <div class="status-line" id="decision-label">YOUR DAILY ADJUSTMENT</div>
+              <h2 id="daily-note-title">A little context changes everything.</h2>
+              <p id="daily-note-summary">We’re retrieving the latest available air-quality context for your chosen location.</p>
+              <div class="action-list" id="daily-actions" aria-label="Suggested actions"></div>
+              <button class="text-action" data-open-view="assistant">ASK A FOLLOW-UP <span aria-hidden="true">↗</span></button>
+            </article>
+            <article class="forecast-card" aria-labelledby="forecast-title">
+              <div class="block-head"><span>01.2 / THE NEXT 24 HOURS</span><span class="small-arrow">↗</span></div>
+              <div class="forecast-title-row"><h2 id="forecast-title">The day ahead.</h2><span class="model-tag">MODEL FORECAST</span></div>
+              <p class="forecast-sub">Predicted PM₂.₅ concentration, not a station measurement.</p>
+              <div class="forecast-plot" id="forecast-plot" role="group" aria-label="Hourly PM2.5 forecast"><div class="plot-loading">Checking model availability…</div></div>
+              <p class="plot-selection" id="forecast-detail">Choose an hour to view the estimate.</p>
+              <div class="chart-note"><span>LOWER RELATIVE CONCENTRATION</span><span>HIGHER RELATIVE CONCENTRATION</span></div>
+            </article>
+          </div>
+          <section class="evidence-strip" aria-labelledby="evidence-heading">
+            <div><div class="eyebrow">01.3 / UNDER THE SURFACE</div><h2 id="evidence-heading">Know where it <em>comes from.</em></h2></div>
+            <div class="evidence-info"><p id="evidence-summary">Waiting for an environmental data provider.</p><div id="source-details" class="evidence-meta"></div><div class="evidence-warnings" id="evidence-warnings"></div></div>
+          </section>
+        </section>
+        <section class="view" id="view-decisions" aria-labelledby="decisions-title" hidden>
+          <div class="section-heading"><div class="eyebrow"><span class="eyebrow-stroke"></span> THE DECISION STUDIO / 02</div><span class="section-index">THE IMPACT OF A CHOICE</span></div>
+          <div class="page-intro"><h1 id="decisions-title">Every choice has <em>two stories.</em></h1><p>What's gentler on the atmosphere might not mean lower personal exposure. See both sides, without the guesswork.</p></div>
+          <div class="decision-tabs" role="tablist" aria-label="Decision scenarios">
+            <button class="scenario-tab active" role="tab" aria-selected="true" data-scenario="commute">01 / THE SHARED JOURNEY</button>
+            <button class="scenario-tab" role="tab" aria-selected="false" data-scenario="errands">02 / SMALLER ERRANDS</button>
+            <button class="scenario-tab" role="tab" aria-selected="false" data-scenario="play">03 / THE PLAYTIME QUESTION</button>
+          </div>
+          <div id="scenario-commute" class="scenario-panel">
+            <div class="decision-layout">
+              <div class="decision-controls"><span class="overline">CHANGE THE CONDITIONS</span><h2>One journey.<br><em>More than one outcome.</em></h2><p>Explore the per-person allocation of vehicle emissions when one car carries more people. This doesn't imply the total vehicle exhaust fell.</p>
+                <label class="range-label" for="trip-distance">Distance per trip <output id="distance-output" for="trip-distance">12 km</output></label><input id="trip-distance" type="range" min="1" max="80" step="1" value="12">
+                <label class="range-label" for="trip-frequency">Trips per week <output id="frequency-output" for="trip-frequency">10</output></label><input id="trip-frequency" type="range" min="1" max="14" value="10">
+                <label class="range-label" for="occupancy">People in shared car <output id="occupancy-output" for="occupancy">3</output></label><input id="occupancy" type="range" min="1" max="6" value="3">
+                <p class="small-source">Indicative factor: US EPA typical gasoline car. Not calibrated to India's fleet. <a href="https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle" target="_blank" rel="noopener noreferrer">Methodology ↗</a></p>
+              </div>
+              <div class="comparison-card"><div class="comparison-heading"><span class="eyebrow">A / B COMPARISON</span><span>CO₂ · TAILPIPE ONLY</span></div>
+                <div class="choice-pair"><div class="choice-a"><span>DRIVE ALONE</span><strong id="solo-value">—</strong><small>kg CO₂ / week, allocated to you</small><div class="comparison-bar"><span id="solo-bar"></span></div></div><div class="choice-divider">↔</div><div class="choice-b"><span>SHARE THE RIDE</span><strong id="shared-value">—</strong><small>kg CO₂ / week, allocated to you</small><div class="comparison-bar"><span id="shared-bar"></span></div></div></div>
+                <div class="impact-summary"><span class="impact-icon">↘</span><p id="commute-impact">Adjust the controls to compare the allocation.</p></div>
+                <div class="scope-note"><span class="scope-marker">!</span><p>Only a per-person allocation comparison. Actual emissions are avoided only when trips are truly replaced. Outdoor exposure depends on the route, timing and vehicle conditions.</p></div>
+              </div>
+            </div>
+          </div>
+          <div id="scenario-errands" class="scenario-panel" hidden>
+            <div class="decision-layout"><div class="decision-controls"><span class="overline">CHANGE THE ROUTINE</span><h2>Fewer starts.<br><em>Less travel.</em></h2><p>A simple scenario: compare three separate return trips with one combined return trip of an assumed total distance. Change the numbers to represent your routine.</p>
+              <label class="range-label" for="errand-distance">One separate round trip <output id="errand-distance-output">6 km</output></label><input id="errand-distance" type="range" min="1" max="30" value="6">
+              <label class="range-label" for="errand-combined">Combined round-trip distance <output id="errand-combined-output">10 km</output></label><input id="errand-combined" type="range" min="1" max="60" value="10">
+            </div><div class="comparison-card"><div class="comparison-heading"><span class="eyebrow">ROUTE EFFICIENCY / EXAMPLE</span><span>DISTANCE NOT EMISSIONS</span></div>
+              <div class="choice-pair"><div class="choice-a"><span>THREE SEPARATE TRIPS</span><strong id="errand-before">18</strong><small>kilometres total</small></div><div class="choice-divider">↔</div><div class="choice-b"><span>ONE COMBINED TRIP</span><strong id="errand-after">10</strong><small>kilometres total</small></div></div><div class="impact-summary"><span class="impact-icon">↘</span><p id="errand-impact">8 kilometres less travelled in this scenario.</p></div><div class="scope-note"><span class="scope-marker">!</span><p>Distances are user-selected assumptions, not calculated routes. Actual pollution reduction depends on transport mode, vehicle and traffic conditions.</p></div></div></div>
+          </div>
+          <div id="scenario-play" class="scenario-panel" hidden><div class="playtime-layout"><div class="playtime-illustration" aria-hidden="true"><div class="playtime-orbit orbit-one"></div><div class="playtime-orbit orbit-two"></div><span class="playtime-symbol">✳</span><span class="playtime-caption">AIR / ACTIVITY</span></div><div class="playtime-advice"><span class="eyebrow">PARENTS / THE EVENING QUESTION</span><h2>Move the activity,<br><em>not the joy.</em></h2><p id="play-guidance">Checking the available environmental context. A single outdoor PM2.5 value cannot give an exact health-risk percentage.</p><div class="action-list"><div class="action-item"><span>01</span><p>Compare strenuous outdoor play with indoor movement activities.</p></div><div class="action-item"><span>02</span><p>Consider timing, intensity, weather, and any personal medical guidance.</p></div></div><button class="text-action" data-open-view="assistant">ASK ABOUT MY HOUSEHOLD ↗</button></div></div></div>
+          <div class="principle-footer"><span>THE TWO-IMPACT PRINCIPLE</span><p><b>Exposure</b> is about what you breathe. <b>Emissions</b> are about what an activity releases. One choice can affect them differently.</p></div>
+        </section>
+        <section class="view" id="view-home" aria-labelledby="home-title" hidden>
+          <div class="section-heading"><div class="eyebrow"><span class="eyebrow-stroke"></span> HOME AIR LAB / 03</div><span class="section-index">THE INDOOR EQUATION</span></div>
+          <div class="page-intro"><h1 id="home-title">The air inside <em>counts, too.</em></h1><p>Outdoor numbers cannot measure your living room. But small, practical changes can help you manage indoor particle sources and filtration.</p></div>
+          <div class="lab-grid"><div class="room-stage"><div class="room-overline">FIG 003 / AN ILLUSTRATED INTERIOR</div><svg class="room-svg" viewBox="0 0 580 405" role="img" aria-label="Stylized room illustration showing outside particles, a window and a portable air cleaner. Not an indoor air measurement."><defs><linearGradient id="room-floor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#607b70"/><stop offset="1" stop-color="#35584c"/></linearGradient></defs><path d="M55 310 L280 388 L536 307 L302 226Z" fill="url(#room-floor)"/><path d="M55 80 L302 14 L302 226 L55 310Z" fill="#d6dacd"/><path d="M302 14 L536 78 L536 307 L302 226Z" fill="#f1efe6"/><path d="M111 124 L235 86 L235 229 L111 263Z" fill="#789186" stroke="#2b493f" stroke-width="5"/><path d="M173 108 L173 244" stroke="#d5dccf" stroke-width="5"/><path d="M111 190 L235 157" stroke="#d5dccf" stroke-width="5"/><g fill="#e9ae7e" opacity=".85"><circle cx="130" cy="168" r="4"/><circle cx="154" cy="211" r="3"/><circle cx="216" cy="170" r="3"/></g><path d="M335 211 L416 234 L416 303 L335 277Z" fill="#1a3630"/><path d="M348 219 L404 234" stroke="#a0b8ac" stroke-width="3"/><path d="M348 239 L404 254 M348 251 L404 266" stroke="#7ca58c" stroke-width="3"/><circle cx="378" cy="285" r="3" fill="#c7cfb2"/><path d="M340 205 Q323 165 352 128" stroke="#73a18e" stroke-width="2" stroke-dasharray="7 8" fill="none"/><path d="M383 206 Q422 159 443 174" stroke="#73a18e" stroke-width="2" stroke-dasharray="7 8" fill="none"/><g fill="#9db8a4"><circle cx="353" cy="148" r="3"/><circle cx="418" cy="175" r="3"/><circle cx="452" cy="212" r="2.5"/></g><path d="M123 314 L221 342 L272 322 L171 292Z" fill="#d9d8c8"/><path d="M163 290 L163 249 Q166 224 191 226 L227 240 L227 326Z" fill="#9ea99b"/><text x="310" y="382" fill="#dee6dc" font-size="11" letter-spacing="3">DIAGRAM / NOT SENSOR DATA</text></svg><div class="room-floor-label">SOURCE CONTROL <span>→</span> AIR FILTRATION <span>→</span> SMART VENTILATION</div></div>
+            <div class="room-controls"><span class="overline">CALIBRATE THE ROOM</span><h2>Right-sized<br><em>cleaner air.</em></h2><p>Estimate a particle-filter CADR from room volume and a selectable clean-air-change target. The result is not an indoor AQI reading.</p>
+              <label class="range-label" for="room-area">Floor area <output id="room-area-output">20 m²</output></label><input id="room-area" type="range" min="5" max="90" value="20">
+              <label class="range-label" for="room-height">Ceiling height <output id="room-height-output">2.8 m</output></label><input id="room-height" type="range" min="2" max="4" step="0.1" value="2.8">
+              <label class="range-label" for="room-ach">Target equivalent clean air changes / hour <output id="room-ach-output">4</output></label><input id="room-ach" type="range" min="2" max="6" value="4">
+              <div class="cadr-result"><span>ILLUSTRATIVE PARTICLE CADR TARGET</span><div><strong id="room-cadr">—</strong><span>m³ / h</span></div><p id="room-note">Calculated from volume × target clean air changes. Check product specifications.</p></div>
+            </div></div>
+          <div class="lab-practices"><div class="practice-heading"><span class="eyebrow">THE PRACTICAL PLAYBOOK</span><h2>Do less harm <em>indoors.</em></h2></div><div class="practice-grid"><article><span>01 / REMOVE</span><h3>Reduce the source.</h3><p>Avoid indoor burning, including incense and smoking. Use kitchen extraction while cooking when possible.</p></article><article><span>02 / FILTER</span><h3>Choose fit, not hype.</h3><p>Use a suitable particle filter and check smoke CADR against room size. Maintain and replace filters as instructed.</p></article><article><span>03 / BALANCE</span><h3>Ventilate thoughtfully.</h3><p>Ventilation needs depend on indoor sources and outdoor conditions. Don't assume windows must always remain closed.</p></article></div><a href="https://www.epa.gov/indoor-air-quality-iaq/guide-air-cleaners-home" class="reference-link" target="_blank" rel="noopener noreferrer">REFERENCE / US EPA GUIDE TO AIR CLEANERS ↗</a></div>
+        </section>
+        <section class="view" id="view-assistant" aria-labelledby="assistant-title" hidden>
+          <div class="section-heading"><div class="eyebrow"><span class="eyebrow-stroke"></span> ASK AIR / 04</div><span class="section-index">KNOW BEFORE YOU GO</span></div>
+          <div class="page-intro"><h1 id="assistant-title">A question.<br><em>A clearer next step.</em></h1><p>Advice shaped by your location, household and the evidence we actually have. No made-up AQI numbers.</p></div>
+          <div class="assistant-layout"><div class="assistant-aside"><div class="assistant-art" aria-hidden="true"><span class="assistant-art-ring"></span><span class="assistant-art-core">✳</span></div><span class="overline">START SOMEWHERE USEFUL</span><div class="question-suggestions"><button data-question="Should my child play cricket outside this evening?">My child wants to play outside <span>↗</span></button><button data-question="How can I reduce particles in my bedroom without an indoor sensor?">My bedroom feels dusty <span>↗</span></button><button data-question="How should I compare a bus and a car commute during smog?">I want a better commute <span>↗</span></button></div></div>
+            <div class="conversation"><div class="conversation-top"><span><span class="assistant-dot"></span> AIR / CONTEXTUAL GUIDE</span><span id="assistant-mode">EVIDENCE-LED</span></div>
+              <div class="conversation-stream" id="conversation-stream" role="log" aria-live="polite" aria-relevant="additions"><div class="welcome-response"><span class="ai-seal">✳</span><h2>Hello, what are you<br><em>thinking about today?</em></h2><p>Ask about an everyday activity, your home, or your journey. I'll use whatever location-specific information is available.</p></div></div>
+              <form id="ask-form" class="ask-form"><label class="sr-only" for="question-input">Ask a question about air quality</label><textarea id="question-input" maxlength="450" rows="2" placeholder="What would you like to know?" required></textarea><button id="send-button" aria-label="Send your question" type="submit">↗</button></form><div class="assistant-legal">GENERAL INFORMATION · NOT MEDICAL ADVICE · SOURCE & UNCERTAINTY SHOWN</div>
+            </div></div>
+        </section>
+      </main>
+      <footer class="site-footer"><div>© 2026 AIR / AFTER <span>✳</span> AN EXPERIMENT IN MORE HUMAN ENVIRONMENTAL DATA</div><div>OPEN-METEO / CAMS · OPENAQ <span class="footer-cross">↗</span></div></footer>
+      <div class="mobile-nav" aria-label="Mobile navigation"><button data-view="intelligence" class="active"><span>◉</span> AIR</button><button data-view="decisions"><span>↗</span> CHOICES</button><button data-view="home"><span>⌂</span> HOME</button><button data-view="assistant"><span>✳</span> ASK</button></div>
+    </div>
+  </div>
+  <dialog id="city-dialog" class="modal-panel" aria-labelledby="city-dialog-title"><form method="dialog" class="dialog-close-line"><span>LOCATION / SEARCH</span><button aria-label="Close location search">×</button></form><div class="dialog-body"><h2 id="city-dialog-title">Where are you <em>breathing?</em></h2><p>Select a location in India. Nothing is inferred from your IP address.</p><label for="city-search">SEARCH FOR A CITY OR TOWN</label><input id="city-search" type="search" autocomplete="off" placeholder="e.g. Pune, Hyderabad, Shillong" maxlength="60"><div id="city-search-status" role="status" class="search-status">Quick selections</div><div class="city-results" id="city-results"></div></div></dialog>
+  <dialog id="profile-dialog" class="modal-panel" aria-labelledby="profile-dialog-title"><form method="dialog" class="dialog-close-line"><span>PERSONAL CONTEXT</span><button aria-label="Close household settings">×</button></form><form id="profile-form" class="dialog-body"><h2 id="profile-dialog-title">Make it <em>yours.</em></h2><p>These preferences stay in this browser. We don't ask for your name or medical records.</p><label for="audience">HOUSEHOLD TYPE</label><select id="audience"><option value="family">Family</option><option value="individual">Individual</option><option value="community">Community</option></select><div class="check-row"><label for="has-children">Children in my household</label><input id="has-children" type="checkbox" checked></div><div class="check-row"><label for="has-older">Older adults</label><input id="has-older" type="checkbox"></div><div class="check-row"><label for="is-sensitive">Consider extra pollution sensitivity</label><input id="is-sensitive" type="checkbox"></div><div class="check-row"><label for="has-purifier">Air purifier at home</label><input id="has-purifier" type="checkbox"></div><label for="commuting">USUAL COMMUTE</label><select id="commuting"><option value="mixed">Varies</option><option value="car">Car</option><option value="carpool">Carpool</option><option value="transit">Public transport</option><option value="walk">Walking</option><option value="cycle">Cycling</option></select><button class="save-profile" type="submit">SAVE LOCAL PREFERENCES <span>↗</span></button><button class="clear-profile" id="clear-profile" type="button">Clear my saved preferences</button></form></dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>

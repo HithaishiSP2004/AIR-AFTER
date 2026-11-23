@@ -1,0 +1,26 @@
+name: Tests and source size
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m compileall -q app
+      - run: python -m pytest -q
+      - name: Enforce source cap (tracked Git content, before any dependencies)
+        run: |
+          python - <<'PY'
+          import os,subprocess
+          paths = subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          tracked_bytes = sum(os.path.getsize(p) for p in paths if p and os.path.isfile(p))
+          print(f'Tracked size: {tracked_bytes/1024:.1f} KiB')
+          assert tracked_bytes < 9_000_000, 'Tracked source exceeds safety budget'
+          PY

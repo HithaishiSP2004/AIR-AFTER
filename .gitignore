@@ -1,0 +1,26 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+.DS_Store
+node_modules/
+dist/
+build/
+.next/
+playwright-report/
+test-results/
+*.log
+
+# Internal agent instructions and development handoff documents
+.agent/
+AGENTS.md
+docs/ANTIGRAVITY_START_HERE.md
+docs/CODEX_VISUAL_BRIEF.md
+docs/VERIFICATION.md
+
